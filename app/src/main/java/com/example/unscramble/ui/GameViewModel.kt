@@ -19,11 +19,6 @@ class GameViewModel : ViewModel() {
     var userGuess by mutableStateOf("")
         private set
 
-
-    private val _correctWords =
-        mutableStateOf<String>()
-    val correctWords : List<String> = _correctWords
-
     private var usedWords: MutableSet<String> = mutableSetOf()
     private lateinit var currentWord: String
 
