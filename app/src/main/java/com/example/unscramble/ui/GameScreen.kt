@@ -4,7 +4,9 @@ import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -34,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,6 +111,7 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel()) {
         if (gameUiState.isGameOver) {
             FinalScoreDialog(
                 score = gameUiState.score,
+                correctWordsHistory = gameUiState.correctWordsHistory,
                 onPlayAgain = { gameViewModel.resetGame() }
             )
         }
@@ -197,10 +201,10 @@ fun GameLayout(
         }
     }
 }
-
 @Composable
 private fun FinalScoreDialog(
     score: Int,
+    correctWordsHistory: List<String>,
     onPlayAgain: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -210,7 +214,23 @@ private fun FinalScoreDialog(
         onDismissRequest = {
         },
         title = { Text(text = stringResource(R.string.congratulations)) },
-        text = { Text(text = stringResource(R.string.you_scored, score)) },
+        text = {
+            Column {
+                Text(text = stringResource(R.string.you_scored, score))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.correct_words_history),
+                    style = typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                correctWordsHistory.forEachIndexed { index, word ->
+                    Text(text = "${index + 1}. $word")
+                }
+            }
+        },
         modifier = modifier,
         dismissButton = {
             TextButton(

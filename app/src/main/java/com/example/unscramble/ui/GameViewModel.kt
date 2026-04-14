@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-
 class GameViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -22,12 +21,15 @@ class GameViewModel : ViewModel() {
     private var usedWords: MutableSet<String> = mutableSetOf()
     private lateinit var currentWord: String
 
+    private var correctlyGuessedWords: MutableList<String> = mutableListOf()
+
     init {
         resetGame()
     }
 
     fun resetGame() {
         usedWords.clear()
+        correctlyGuessedWords.clear()
         _uiState.value = GameUiState(currentScrambledWord = pickRandomWordAndShuffle())
     }
 
@@ -38,6 +40,8 @@ class GameViewModel : ViewModel() {
     fun checkUserGuess() {
         if (userGuess.equals(currentWord, ignoreCase = true)) {
             val updatedScore = _uiState.value.score.plus(SCORE_INCREASE)
+            correctlyGuessedWords.add(currentWord)
+
             updateGameState(updatedScore)
         } else {
             _uiState.update { currentState ->
@@ -59,7 +63,7 @@ class GameViewModel : ViewModel() {
                     isGuessedWordWrong = false,
                     score = updatedScore,
                     isGameOver = true,
-                    correctWordsHistory = usedWords.toList()
+                    correctWordsHistory = correctlyGuessedWords.toList()
                 )
             }
         } else{
@@ -92,5 +96,4 @@ class GameViewModel : ViewModel() {
             shuffleCurrentWord(currentWord)
         }
     }
-
 }
